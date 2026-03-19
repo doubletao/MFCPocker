@@ -21,6 +21,14 @@ DataCenter::DataCenter(void)
             PokerCard * pCard = nullptr;
             pCard = new PokerCard;
             pCard->SetValue(i);
+            // 设置花色 j: 0黑桃 1红桃 2梅花 3方块
+            switch (j)
+            {
+            case 0: pCard->SetSuit(CardSuit::Spade); break;
+            case 1: pCard->SetSuit(CardSuit::Heart); break;
+            case 2: pCard->SetSuit(CardSuit::Club); break;
+            case 3: pCard->SetSuit(CardSuit::Diamond); break;
+            }
             m_stuMainCard.PushBackCard(pCard);
             pCard->SetID((quint32)m_stuMainCard.GetCardPile().size());
         }
@@ -30,6 +38,7 @@ DataCenter::DataCenter(void)
         PokerCard * pCard = nullptr;
         pCard = new PokerCard;
         pCard->SetValue(g_nCardDispModel - 2);
+        pCard->SetSuit(CardSuit::JokerSmall); // 小王 红色
         m_stuMainCard.PushBackCard(pCard);
         pCard->SetID((quint32)m_stuMainCard.GetCardPile().size());
     }
@@ -37,6 +46,7 @@ DataCenter::DataCenter(void)
         PokerCard * pCard = nullptr;
         pCard = new PokerCard;
         pCard->SetValue(g_nCardDispModel - 1);
+        pCard->SetSuit(CardSuit::JokerBig); // 大王 黑色
         m_stuMainCard.PushBackCard(pCard);
         pCard->SetID((quint32)m_stuMainCard.GetCardPile().size());
     }

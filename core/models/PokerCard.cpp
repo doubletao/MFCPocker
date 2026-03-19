@@ -63,15 +63,15 @@ void PokerCard::DrawTo(QPainter *painter)
     {
         QString strTxt = GetDisplayTxt();
         int nGap = 4;
+        QColor textColor = IsRedSuit() ? Qt::red : Qt::black;
 
-        // Joker使用红色，其他黑色，字号更小
-        if (m_nValue >= 13) // joker 和 JOKER
+        if (m_nValue >= 13) // Joker
         {
             QFont font = painter->font();
             font.setPointSize(12);
             font.setBold(true);
             painter->setFont(font);
-            painter->setPen(Qt::red);
+            painter->setPen(textColor);
             QFontMetrics fm(font);
 
             // Joker 逐字符竖排显示，不旋转，简单可靠
@@ -99,7 +99,7 @@ void PokerCard::DrawTo(QPainter *painter)
             font.setPointSize(16);
             font.setBold(true);
             painter->setFont(font);
-            painter->setPen(Qt::black);
+            painter->setPen(textColor);
             QFontMetrics fm(font);
             // 普通牌正常显示
             int nWidth = 0;
