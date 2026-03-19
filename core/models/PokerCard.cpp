@@ -42,6 +42,19 @@ QString PokerCard::GetDisplayTxt()
     return g_strCardDisp[m_nValue];
 }
 
+// 获取花色符号
+static const char* getSuitSymbol(CardSuit suit)
+{
+    switch (suit)
+    {
+    case CardSuit::Spade: return "♠";
+    case CardSuit::Heart: return "♥";
+    case CardSuit::Club: return "♣";
+    case CardSuit::Diamond: return "♦";
+    default: return "";
+    }
+}
+
 void PokerCard::DrawTo(QPainter *painter)
 {
     QRect rtRegion = GetRegion();
@@ -59,7 +72,32 @@ void PokerCard::DrawTo(QPainter *painter)
     painter->setBrush(GetBackColor());
     painter->drawRoundedRect(rtRegion, 4, 4);
 
-    if (m_bShowValue)
+    if (!m_bShowValue)
+    {
+        // 牌背面：绘制重复花纹
+        int tileSize = 12;
+        QColor backPatternColor(100, 150, 100);
+        painter->setPen(QPen(backPatternColor, 1));
+        // 绘制网格状花纹
+        for (int x = rtRegion.left() + 8; x < rtRegion.right(); x += tileSize)
+        {
+            for (int y = rtRegion.top() + 8; y < rtRegion.bottom(); y += tileSize)
+            {
+                if ((x / tileSize + y / tileSize) % 2 == 0)
+                {
+                    painter->drawEllipse(x, y, 6, 6);
+                }
+            }
+        }
+        // 中心绘制一个大菱形
+        int cx = rtRegion.center().x();
+        int cy = rtRegion.center().y();
+        QPolygon diamond;
+        diamond << QPoint(cx, cy - 20) << QPoint(cx + 20, cy) << QPoint(cx, cy + 20) << QPoint(cx - 20, cy);
+        painter->setBrush(QColor(80, 130, 80));
+        painter->drawPolygon(diamond);
+    }
+    else
     {
         QString strTxt = GetDisplayTxt();
         int nGap = 4;
@@ -92,6 +130,17 @@ void PokerCard::DrawTo(QPainter *painter)
                 painter->drawText(currentX, currentY + fm.ascent(), QString(c));
                 currentY += lineHeight;
             }
+
+            // Joker中间绘制大花色符号
+            const char* bigSymbol = (m_suit == CardSuit::JokerSmall) ? "小王" : "大王";
+            QFont bigFont = painter->font();
+            bigFont.setPointSize(28);
+            bigFont.setBold(true);
+            painter->setFont(bigFont);
+            QFontMetrics bigFm(bigFont);
+            int centerX = rtRegion.center().x() - bigFm.horizontalAdvance(bigSymbol) / 2;
+            int centerY = rtRegion.center().y() + bigFm.ascent() / 2;
+            painter->drawText(centerX, centerY, QString(bigSymbol));
         }
         else
         {
@@ -101,7 +150,7 @@ void PokerCard::DrawTo(QPainter *painter)
             painter->setFont(font);
             painter->setPen(textColor);
             QFontMetrics fm(font);
-            // 普通牌正常显示
+            // 普通牌正常显示数字
             int nWidth = 0;
             int nHeight = 0;
             int nMaxWidth = 0;
@@ -137,6 +186,19 @@ void PokerCard::DrawTo(QPainter *painter)
 
             painter->drawText(rtLeftTop, strTxt, QTextOption(Qt::AlignLeft | Qt::AlignTop));
             painter->drawText(rtRightBottom, strTxt, QTextOption(Qt::AlignRight | Qt::AlignBottom));
+
+            // 在牌面中心绘制大的花色符号
+            const char* suitSymbol = getSuitSymbol(m_suit);
+            if (suitSymbol[0] != '\0')
+            {
+                QFont suitFont = painter->font();
+                suitFont.setPointSize(32);
+                painter->setFont(suitFont);
+                QFontMetrics suitFm(suitFont);
+                int centerX = rtRegion.center().x() - suitFm.horizontalAdvance(suitSymbol) / 2;
+                int centerY = rtRegion.center().y() + suitFm.ascent() / 2;
+                painter->drawText(centerX, centerY, QString(suitSymbol));
+            }
         }
     }
 
