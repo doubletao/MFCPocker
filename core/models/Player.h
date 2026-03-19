@@ -53,6 +53,7 @@ public:
     void SetLandOwerCardHolder(bool bLandOwerCardHolder) { m_bLandOwerCardHolder = bLandOwerCardHolder; }
     bool IsLandOwerCardHolder() { return m_bLandOwerCardHolder; }
     QString GetID() { return m_strID; }
+    QString GetName() const { return m_strName; }
     unsigned int GetCardCount() { return m_stuHandCard.GetCardPile().size(); }
     void ExcuteCallLandOwer();
     void ExcuteCallCardPlay();

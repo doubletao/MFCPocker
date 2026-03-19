@@ -31,6 +31,7 @@ signals:
     void refreshView();
     void showCallLandOwerBtn(bool show, int currentScore);
     void showCardPlayBtn(bool show, bool hidePassBtn);
+    void playerAction(QString playerName, QString action);
 
 public:
     void ShowCallLandOwerBtn(bool bShow);

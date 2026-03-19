@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include <QString>
 #include "core/models/DataCenter.h"
 #include "ui/GameButton.h"
 

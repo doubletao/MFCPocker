@@ -1,6 +1,7 @@
 #include "Judge.h"
 #include "DataCenter.h"
 #include <QMessageBox>
+#include <QTimer>
 
 Judge::Judge(void)
     : m_pCurCardPlayer(nullptr)
@@ -156,15 +157,18 @@ void Judge::CurPlayerCallScore(int nScore)
     {
         QString strWord = tr("不叫");
         m_pCurPlayer->Say(strWord);
+        emit playerAction(m_pCurPlayer->GetName(), strWord);
     }
     else
     {
         QString strWord = QString::number(nScore) + tr("分");
         m_pCurPlayer->Say(strWord);
+        emit playerAction(m_pCurPlayer->GetName(), strWord);
     }
     emit showCallLandOwerBtn(false, m_nCurHighstScore);
     SwitchToNextPlayer();
-    MainFlow();
+    // 异步执行，让界面先刷新隐藏按钮，再让AI叫分，避免用户误点卡住
+    QTimer::singleShot(100, this, &Judge::MainFlow);
 }
 
 void Judge::CurPlayerPlayCard()
@@ -192,6 +196,7 @@ void Judge::CurPlayerPlayCard()
                 strWord += g_strCardDisp[cardPile[i]->GetValue()] + " ";
             }
             m_pCurPlayer->Say(strWord);
+            emit playerAction(m_pCurPlayer->GetName(), strWord);
         }
 
         ICard * pCard = nullptr;
@@ -210,11 +215,14 @@ void Judge::CurPlayerPlayCard()
     }
     else
     {
-        m_pCurPlayer->Say(tr("PASS"));
+        QString strWord = tr("不要");
+        m_pCurPlayer->Say(strWord);
+        emit playerAction(m_pCurPlayer->GetName(), strWord);
     }
     emit showCardPlayBtn(false, (DataCenter::Instance().GetCurCardGroup().GetCardPile().size() == 0 || m_pCurPlayer->GetID() == m_pCurCardPlayer->GetID()));
     SwitchToNextPlayer();
-    MainFlow();
+    // 异步执行，让界面先刷新隐藏按钮，再让AI出牌，避免用户误点卡住
+    QTimer::singleShot(100, this, &Judge::MainFlow);
 }
 
 bool Judge::CheckCurPlayerCard()
