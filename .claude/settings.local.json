@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l *.cpp *.h)",
+      "Bash(mkdir:*)",
+      "Bash(cd:*)"
+    ]
+  }
+}
