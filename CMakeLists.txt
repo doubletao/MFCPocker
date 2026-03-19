@@ -57,7 +57,7 @@ set(TS_FILES
 
 qt5_add_translation(QM_FILES ${TS_FILES})
 
-add_executable(MFCPoker
+add_executable(MFCPoker WIN32
     ${SOURCES}
     ${HEADERS}
     ${QM_FILES}

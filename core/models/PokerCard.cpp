@@ -123,6 +123,11 @@ bool PokerCard::HitTest(QPoint pt)
     if (m_bShowValue)
     {
         QRect rtRegion = GetRegion();
+        // 选中的卡牌绘制时向上偏移了10像素，点击检测也需要对应偏移
+        if (m_bSelect)
+        {
+            rtRegion.translate(0, -10);
+        }
         if (rtRegion.contains(pt))
         {
             return true;
