@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setWindowTitle(tr("斗地主"));
-    resize(800, 600);
+    resize(1024, 768);
 
     GameWidget *gameWidget = new GameWidget(this);
     setCentralWidget(gameWidget);

@@ -34,15 +34,24 @@ void Player::DrawPlayerHead(QPainter *painter, QRect rtBound)
     painter->setBrush(ColorDefine::PlayerHeadBack);
     painter->drawRect(rtBound);
 
-    painter->drawText(rtBound, m_strName, QTextOption(Qt::AlignCenter));
+    // 使用白色文字，深色背景上更清晰
+    painter->setPen(Qt::white);
+    QFont font = painter->font();
+    font.setBold(true);
+    font.setPointSize(font.pointSize() + 1);
+    painter->setFont(font);
 
     if (m_bLandOwer)
     {
-        painter->drawText(rtBound, QCoreApplication::translate("Player", "地主"), QTextOption(Qt::AlignCenter));
+        painter->drawText(rtBound, QString("%1\n%2").arg(m_strName).arg(QCoreApplication::translate("Player", "地主")), QTextOption(Qt::AlignCenter));
+    }
+    else if (m_bLandOwerCardHolder)
+    {
+        painter->drawText(rtBound, QString("%1\n%2").arg(m_strName).arg(QCoreApplication::translate("Player", "农民")), QTextOption(Qt::AlignCenter));
     }
     else
     {
-        painter->drawText(rtBound, QCoreApplication::translate("Player", "农民"), QTextOption(Qt::AlignCenter));
+        painter->drawText(rtBound, m_strName, QTextOption(Qt::AlignCenter));
     }
 
     painter->restore();
@@ -96,33 +105,45 @@ void Player::DrawTo(QPainter *painter)
     DrawPlayerHead(painter, rtHead);
     DrawCard(painter, rtCard);
 
-    QFontMetrics fm(painter->font());
-    QSize szWord = fm.size(Qt::TextSingleLine, m_strWord);
-    QRect rtWord;
-    switch(m_emPlayerType)
+    if (!m_strWord.isEmpty())
     {
-    case EM_Left_Player:
-        rtWord.setLeft(rtCard.right() + g_nGap);
-        rtWord.setTop(rtHead.top() + g_nGap);
-        rtWord.setRight(rtWord.left() + szWord.width());
-        rtWord.setBottom(rtWord.top() + szWord.height());
-        break;
-    case EM_Mid_Player:
-        rtWord.setLeft(rtHead.left() + g_nGap);
-        rtWord.setTop(rtCard.top() - g_nGap - szWord.height());
-        rtWord.setRight(rtWord.left() + szWord.width());
-        rtWord.setBottom(rtWord.top() + szWord.height());
-        break;
-    case EM_Right_Player:
-        rtWord.setLeft(rtCard.left() - g_nGap - szWord.width());
-        rtWord.setTop(rtHead.top() + g_nGap);
-        rtWord.setRight(rtWord.left() + szWord.width());
-        rtWord.setBottom(rtWord.top() + szWord.height());
-        break;
-    default:
-        break;
+        // 使用更大、更粗的白色文字，更醒目
+        QFont font = painter->font();
+        font.setBold(true);
+        font.setPointSize(font.pointSize() + 2);
+        painter->setFont(font);
+        painter->setPen(Qt::white);
+
+        QFontMetrics fm(font);
+        QSize szWord = fm.size(Qt::TextSingleLine, m_strWord);
+        QRect rtWord;
+        switch(m_emPlayerType)
+        {
+        case EM_Left_Player:
+            rtWord.setLeft(rtCard.right() + g_nGap);
+            rtWord.setTop(rtHead.top() + g_nGap);
+            rtWord.setRight(rtWord.left() + szWord.width());
+            rtWord.setBottom(rtWord.top() + szWord.height());
+            break;
+        case EM_Mid_Player:
+            rtWord.setLeft(rtHead.left() + g_nGap);
+            rtWord.setTop(rtCard.top() - g_nGap - szWord.height());
+            rtWord.setRight(rtWord.left() + szWord.width());
+            rtWord.setBottom(rtWord.top() + szWord.height());
+            break;
+        case EM_Right_Player:
+            rtWord.setLeft(rtCard.left() - g_nGap - szWord.width());
+            rtWord.setTop(rtHead.top() + g_nGap);
+            rtWord.setRight(rtWord.left() + szWord.width());
+            rtWord.setBottom(rtWord.top() + szWord.height());
+            break;
+        default:
+            break;
+        }
+        // 添加黑色描边背景让文字更清晰
+        painter->fillRect(rtWord.adjusted(-2, -2, 2, 2), QColor(0, 0, 0, 160));
+        painter->drawText(rtWord, m_strWord, QTextOption(Qt::AlignCenter));
     }
-    painter->drawText(rtWord, m_strWord, QTextOption(Qt::AlignCenter));
 }
 
 void Player::ExcuteCallLandOwer()

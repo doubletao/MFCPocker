@@ -17,7 +17,7 @@ const QString g_strCardDisp[] = {
     QT_TRANSLATE_NOOP("PokerCard", "K"),
     QT_TRANSLATE_NOOP("PokerCard", "A"),
     QT_TRANSLATE_NOOP("PokerCard", "2"),
-    QT_TRANSLATE_NOOP("PokerCard", "joker"),
+    QT_TRANSLATE_NOOP("PokerCard", "Joker"),
     QT_TRANSLATE_NOOP("PokerCard", "JOKER")
 };
 
@@ -26,10 +26,10 @@ PokerCard::PokerCard(void)
     SetWidth(g_nCardWidth);
     SetHeight(g_nCardHeight);
     ShowBound(true);
-    SetBoundColor(ColorDefine::PokerCardBound);
-    SetBoundWidth(2);
+    SetBoundColor(QColor(180, 180, 180));
+    SetBoundWidth(1);
     ShowBackground(true);
-    SetBackColor(ColorDefine::PokerCardBack);
+    SetBackColor(Qt::white);
 }
 
 PokerCard::~PokerCard(void)
@@ -50,63 +50,97 @@ void PokerCard::DrawTo(QPainter *painter)
     {
         rtRegion.translate(0, -10);
     }
+
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing);
+
+    // 绘制圆角矩形背景和边框
+    painter->setPen(QPen(GetBoundColor(), GetBoundWidth()));
+    painter->setBrush(GetBackColor());
+    painter->drawRoundedRect(rtRegion, 4, 4);
+
     if (m_bShowValue)
     {
-        painter->save();
-
-        QRect rtValueRect = rtRegion.adjusted(2, 2, -2, -2);
-        painter->setPen(ColorDefine::PokerCardValueBound);
-        painter->setBrush(ColorDefine::PokerCardValueBack);
-        painter->drawRect(rtValueRect);
-
         QString strTxt = GetDisplayTxt();
-        QFont font = painter->font();
-        QFontMetrics fm(font);
+        int nGap = 4;
 
-        int nWidth = 0;
-        int nHeight = 0;
-        int nMaxWidth = 0;
-
-        for (int i = 0; i < strTxt.length(); i++)
+        // Joker使用红色，其他黑色，字号更小
+        if (m_nValue >= 13) // joker 和 JOKER
         {
-            if (strTxt[i] == '\n')
+            QFont font = painter->font();
+            font.setPointSize(12);
+            font.setBold(true);
+            painter->setFont(font);
+            painter->setPen(Qt::red);
+            QFontMetrics fm(font);
+
+            // Joker 逐字符竖排显示，不旋转，简单可靠
+            int lineHeight = fm.height();
+            // 左上角绘制，每个字符占一行
+            int currentX = rtRegion.left() + nGap;
+            int currentY = rtRegion.top() + nGap;
+            for (QChar c : strTxt)
             {
-                nHeight += fm.height();
-                nMaxWidth = qMax(nMaxWidth, nWidth);
-                nWidth = 0;
+                painter->drawText(currentX, currentY + fm.ascent(), QString(c));
+                currentY += lineHeight;
             }
-            else
+            // 右下角绘制
+            currentX = rtRegion.right() - nGap - fm.maxWidth();
+            currentY = rtRegion.bottom() - nGap - strTxt.length() * lineHeight;
+            for (QChar c : strTxt)
             {
-                nWidth += fm.horizontalAdvance(strTxt[i]);
+                painter->drawText(currentX, currentY + fm.ascent(), QString(c));
+                currentY += lineHeight;
             }
         }
-        nHeight += fm.height();
-        nMaxWidth = qMax(nMaxWidth, nWidth);
+        else
+        {
+            QFont font = painter->font();
+            font.setPointSize(16);
+            font.setBold(true);
+            painter->setFont(font);
+            painter->setPen(Qt::black);
+            QFontMetrics fm(font);
+            // 普通牌正常显示
+            int nWidth = 0;
+            int nHeight = 0;
+            int nMaxWidth = 0;
 
-        int nGap = 2;
+            for (int i = 0; i < strTxt.length(); i++)
+            {
+                if (strTxt[i] == '\n')
+                {
+                    nHeight += fm.height();
+                    nMaxWidth = qMax(nMaxWidth, nWidth);
+                    nWidth = 0;
+                }
+                else
+                {
+                    nWidth += fm.horizontalAdvance(strTxt[i]);
+                }
+            }
+            nHeight += fm.height();
+            nMaxWidth = qMax(nMaxWidth, nWidth);
 
-        QRect rtRightTop(
-            rtRegion.right() - nMaxWidth - nGap,
-            rtRegion.top() + nGap,
-            nMaxWidth,
-            nHeight + nGap
-        );
-        QRect rtLeftBottom(
-            rtRegion.left() + nGap,
-            rtRegion.bottom() - nHeight - nGap - nGap,
-            nMaxWidth,
-            nHeight + nGap
-        );
+            QRect rtLeftTop(
+                rtRegion.left() + nGap,
+                rtRegion.top() + nGap,
+                nMaxWidth,
+                nHeight + nGap
+            );
+            QRect rtRightBottom(
+                rtRegion.right() - nMaxWidth - nGap,
+                rtRegion.bottom() - nHeight - nGap - nGap,
+                nMaxWidth,
+                nHeight + nGap
+            );
 
-        painter->drawText(rtRightTop, strTxt, QTextOption(Qt::AlignLeft | Qt::AlignTop));
-        painter->drawText(rtLeftBottom, strTxt, QTextOption(Qt::AlignLeft | Qt::AlignTop));
-
-        painter->restore();
+            painter->drawText(rtLeftTop, strTxt, QTextOption(Qt::AlignLeft | Qt::AlignTop));
+            painter->drawText(rtRightBottom, strTxt, QTextOption(Qt::AlignRight | Qt::AlignBottom));
+        }
     }
-    else
-    {
-        ICard::DrawTo(painter);
-    }
+
+    painter->restore();
 }
 
 bool PokerCard::ValidValue(int nValue)

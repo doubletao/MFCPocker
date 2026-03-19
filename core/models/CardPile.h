@@ -7,7 +7,7 @@
 #include "core/interfaces/IDrawable.h"
 #include <vector>
 
-const int g_nDefaultCardGap = 20;
+const int g_nDefaultCardGap = 25;
 
 class CardGroup;
 class CardPile : public IDrawable

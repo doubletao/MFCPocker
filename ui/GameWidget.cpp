@@ -109,10 +109,10 @@ void GameWidget::resizeEvent(QResizeEvent *event)
 
 void GameWidget::layoutButtons()
 {
-    int bottom = height() - 10;
+    int bottom = height() - g_nCardHeight - g_nButtonGap - 20;
     int y = bottom - g_nButtonHeight;
 
-    // 叫分按钮在底部居中
+    // 叫分按钮在底部居中（玩家手牌上方）
     int totalWidth = 4 * g_nButtonWidth + 3 * g_nButtonGap;
     int x = (width() - totalWidth) / 2;
     for (int id = EM_PASS_SCORE_BUTTON; id <= EM_THREE_SCORE_BUTTON; id++)

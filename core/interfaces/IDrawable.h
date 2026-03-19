@@ -11,20 +11,16 @@
 
 // 颜色定义
 namespace ColorDefine {
-    const QColor WholeBound = QColor(0, 90, 0);           // 整体显示边框颜色
-    const QColor WholeBack = QColor(0, 90, 0);             // 整体显示背景颜色
-    const QColor PlayerBound = QColor(0, 125, 20);         // 玩家显示边框颜色
-    const QColor PlayerBack = QColor(0, 50, 50);           // 玩家显示背景颜色
+    const QColor WholeBound = QColor(0, 100, 0);           // 整体显示边框颜色
+    const QColor WholeBack = QColor(20, 120, 40);           // 整体显示背景颜色（更亮的牌桌绿）
+    const QColor PlayerBound = QColor(0, 140, 30);         // 玩家显示边框颜色
+    const QColor PlayerBack = QColor(10, 80, 60);           // 玩家显示背景颜色
     const QColor PlayerHeadBound = QColor(125, 125, 125);  // 玩家头像边框颜色
     const QColor PlayerHeadBack = QColor(50, 50, 50);      // 玩家头像背景颜色
     const QColor PlayerCardBound = QColor(200, 200, 200);  // 玩家手牌边框颜色
     const QColor PlayerCardBack = QColor(150, 150, 150);   // 玩家手牌背景颜色
-    const QColor PokerCardBound = QColor(0, 50, 50);       // 扑克牌边框颜色
-    const QColor PokerCardBack = QColor(0, 200, 50);       // 扑克牌背景颜色
     const QColor PokerCardValueBound = QColor(125, 125, 150);  // 牌值边框颜色
     const QColor PokerCardValueBack = QColor(255, 255, 255);   // 牌值背景颜色
-    const QColor ButtonBound = QColor(200, 200, 200);      // 按钮边框颜色
-    const QColor ButtonBack = QColor(200, 200, 200);       // 按钮背景颜色
 };
 
 class IDrawable
@@ -57,4 +53,7 @@ public:
     void ShowBound(bool bEnabled = true) { m_bDrawBound = bEnabled; }
     void SetBoundColor(QColor nColor) { m_nBoundColor = nColor; }
     void SetBoundWidth(int nWidth) { m_nBoundWidth = nWidth; }
+    QColor GetBoundColor() const { return m_nBoundColor; }
+    int GetBoundWidth() const { return m_nBoundWidth; }
+    QColor GetBackColor() const { return m_nBackColor; }
 };

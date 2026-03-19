@@ -83,3 +83,4 @@ QRect IDrawable::GetRegion()
     rtRegion.translate(m_ptPosition.x(), m_ptPosition.y());
     return rtRegion;
 }
+

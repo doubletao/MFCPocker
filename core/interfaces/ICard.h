@@ -6,8 +6,8 @@
 #include "ISortable.h"
 #include "IClickable.h"
 
-const int g_nCardWidth = 80;
-const int g_nCardHeight = 100;
+const int g_nCardWidth = 90;
+const int g_nCardHeight = 120;
 
 class ICard
     : public IDrawable

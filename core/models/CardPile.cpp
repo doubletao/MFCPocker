@@ -59,21 +59,26 @@ void CardPile::DrawTo(QPainter *painter)
     bool bIsVer = rtRegion.width() < rtRegion.height();
     if (bIsVer)
     {
+        // 垂直方向（左右两侧AI玩家）：从下往上绘制，最上方一张完整显示
+        int startY = m_ptPosition.y() + rtRegion.height() - sizeCards.height();
         for (int i = 0; i < (int)m_vecCard.size(); i++)
         {
             m_vecCard[i]->SelectCard(CheckOnHoldCard(i));
             m_vecCard[i]->ShowValue(m_bShowValue);
-            m_vecCard[i]->SetPosition(QPoint(m_ptPosition.x(), m_ptPosition.y() + (rtRegion.height() - sizeCards.height()) / 2 + g_nDefaultCardGap * i));
+            m_vecCard[i]->SetPosition(QPoint(m_ptPosition.x(), startY + g_nDefaultCardGap * i));
             m_vecCard[i]->DrawTo(painter);
         }
     }
     else
     {
-        for (int i = (int)m_vecCard.size() - 1; i > -1; i--)
+        // 水平方向（底部玩家手牌）：从左往右绘制，右侧牌压住左侧牌，左侧数字露出
+        // 点击检测在GameWidget中已经是逆序，能正确命中上层的牌
+        int centerStartX = m_ptPosition.x() + (rtRegion.width() - sizeCards.width()) / 2;
+        for (int i = 0; i < (int)m_vecCard.size(); i++)
         {
             m_vecCard[i]->SelectCard(CheckOnHoldCard(i));
             m_vecCard[i]->ShowValue(m_bShowValue);
-            m_vecCard[i]->SetPosition(QPoint(m_ptPosition.x() + (rtRegion.width() - sizeCards.width()) / 2 + g_nDefaultCardGap * i, m_ptPosition.y()));
+            m_vecCard[i]->SetPosition(QPoint(centerStartX + g_nDefaultCardGap * i, m_ptPosition.y()));
             m_vecCard[i]->DrawTo(painter);
         }
     }
